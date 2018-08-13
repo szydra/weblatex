@@ -30,11 +30,12 @@
           </form>
         </div>
         <div class="col-lg-8" th:if="${#httpServletRequest.method == 'POST'}">
-          <p><img class="img-thumbnail my-2" th:id="'imageResult'+${id}"
+          <p><img class="img-thumbnail my-2" th:id="'imageResult' + ${id}"
             th:src="${encodedImage}"/></p>
           <p>
             <button type="button" class="btn btn-primary mx-2 mb-2"
-              th:onclick="'saveImage(\'imageResult'+${id}+'\', \'result'+${id}+'.png\')'">
+              th:onclick="'saveImage(\'imageResult' + ${id} + '\', \'result'
+                + ${id} + '.' + ${format} + '\')'">
                 Save image
             </button>
             <a href="/weblatex" class="btn btn-primary mx-2 mb-2">Create another image</a>
