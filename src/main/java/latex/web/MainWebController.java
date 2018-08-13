@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import latex.model.LatexFormula;
+import latex.parser.Parser;
 
 @Controller
 class MainWebController {
@@ -17,7 +18,7 @@ class MainWebController {
 	private final AtomicLong counter = new AtomicLong();
 
 	@Autowired
-	private LatexService latexService;
+	private Parser parser;
 
 	@GetMapping("/")
 	public String redirectToWeblatex() {
@@ -31,11 +32,12 @@ class MainWebController {
 	}
 
 	@PostMapping("/weblatex")
-	public String postWeblatex(@ModelAttribute LatexFormula latexString, Model model) {
-		latexService.parseLatex(latexString);
+	public String postWeblatex(@ModelAttribute LatexFormula latexFormula, Model model) {
+		parser.parseLatex(latexFormula);
 		model.addAttribute("id", counter.incrementAndGet());
-		model.addAttribute("encodedImage", latexString.getEncodedImage());
-		return "result";
+		model.addAttribute("encodedImage", latexFormula.getEncodedImage());
+		model.addAttribute("format", latexFormula.getFormat());
+		return "weblatex";
 	}
 
 }
