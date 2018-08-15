@@ -13,6 +13,7 @@ import java.util.Base64.Encoder;
 import javax.imageio.ImageIO;
 import javax.swing.JLabel;
 
+import org.scilab.forge.jlatexmath.ParseException;
 import org.scilab.forge.jlatexmath.TeXConstants;
 import org.scilab.forge.jlatexmath.TeXFormula;
 import org.scilab.forge.jlatexmath.TeXIcon;
@@ -25,13 +26,18 @@ class PngRenderer implements Renderer {
 		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
 			ImageIO.write(image, "png", baos);
 			return baos.toByteArray();
-		} catch (IOException e) {
-			throw new RendererException("Cannot convert an image to a byte array.", e);
+		} catch (IOException ioe) {
+			throw new RendererException("Cannot convert an image to a byte array.", ioe);
 		}
 	}
 
 	private BufferedImage toBufferedImage(String latexFormula, int fontSize) {
-		TeXFormula formula = new TeXFormula(latexFormula);
+		TeXFormula formula;
+		try {
+			formula = new TeXFormula(latexFormula);
+		} catch (ParseException pe) {
+			throw new RendererException("Cannot render formula '" + latexFormula + "'", pe);
+		}
 		TeXIcon icon = formula.new TeXIconBuilder()
 				.setStyle(TeXConstants.STYLE_DISPLAY)
 				.setSize(fontSize)
@@ -69,8 +75,8 @@ class PngRenderer implements Renderer {
 		}
 		try {
 			return toBase64String(ImageIO.read(image));
-		} catch (IOException e) {
-			throw new RendererException("Cannot encode image " + image.getName(), e);
+		} catch (IOException ioe) {
+			throw new RendererException("Cannot encode image " + image.getName(), ioe);
 		}
 	}
 
@@ -78,4 +84,5 @@ class PngRenderer implements Renderer {
 	public String getFormat() {
 		return "png";
 	}
+
 }
