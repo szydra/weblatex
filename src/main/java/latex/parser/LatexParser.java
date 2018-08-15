@@ -1,11 +1,10 @@
 package latex.parser;
 
-import java.io.IOException;
+import java.io.FileNotFoundException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import latex.model.LatexFormula;
@@ -16,6 +15,9 @@ import latex.renderer.RendererException;
 class LatexParser implements Parser {
 
 	private static final Logger logger = LoggerFactory.getLogger(LatexParser.class);
+
+	@Autowired
+	private ErrorFileProvider provider;
 
 	@Autowired
 	private Renderer renderer;
@@ -41,9 +43,9 @@ class LatexParser implements Parser {
 
 	private String getErrorString() {
 		try {
-			return renderer.getImage(new ClassPathResource("error.png").getFile());
-		} catch (IOException ioe) {
-			logger.error("Cannot read error.png file.", ioe);
+			return renderer.getImage(provider.getErrorFile());
+		} catch (FileNotFoundException | RendererException e) {
+			logger.error("Cannot read error.png file.", e);
 			return "";
 		}
 	}
