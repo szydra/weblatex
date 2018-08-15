@@ -4,9 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
-import java.io.IOException;
+import java.io.FileNotFoundException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +23,9 @@ import latex.renderer.RendererException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LatexParserTest {
+
+	@Mock
+	private ErrorFileProvider provider;
 
 	@Mock
 	private Renderer renderer;
@@ -66,11 +72,9 @@ public class LatexParserTest {
 	}
 
 	@Test
-	public void testIOException() {
+	public void testIOException() throws FileNotFoundException {
 		doThrow(RendererException.class).when(renderer).getImage(any(), anyInt());
-		doAnswer(invocation -> {
-			throw new IOException();
-		}).when(renderer).getImage(any());
+		doThrow(FileNotFoundException.class).when(provider).getErrorFile();
 		LatexFormula formula = new LatexFormula();
 		parser.parseLatex(formula);
 		assertNotNull(formula.getEncodedImage());
